@@ -28,11 +28,11 @@ TEST_F(SimpleTest, EmptyMessageContent) {
     EXPECT_EQ(msg.getChatText(), "");
 }
 
-// Test message with zero sequence number
+// Test message with zero sequence number  
 TEST_F(SimpleTest, ZeroSequenceNumber) {
     Message msg("Hello", "Node1", "Node2", 0);
     
-    EXPECT_TRUE(msg.isValid()); // Zero sequence should be valid now
+    EXPECT_FALSE(msg.isValid()); // Zero sequence should be invalid (must start from 1)
 }
 
 // Test message serialization
@@ -139,7 +139,7 @@ TEST_F(SimpleTest, DefaultConstructor) {
     EXPECT_EQ(msg.getOrigin(), "");
     EXPECT_EQ(msg.getDestination(), "");
     EXPECT_EQ(msg.getSequenceNumber(), 0);
-    EXPECT_FALSE(msg.isValid()); // Default should be invalid
+    EXPECT_FALSE(msg.isValid()); // Default should be invalid (sequence must be >= 1)
 }
 
 // Test edge case: very large sequence number
@@ -179,11 +179,24 @@ TEST_F(SimpleTest, EmptyVariantMapDeserialization) {
     QVariantMap emptyMap;
     Message msg = Message::fromVariantMap(emptyMap);
     
-    EXPECT_FALSE(msg.isValid());
+    EXPECT_FALSE(msg.isValid()); // Invalid due to empty fields and sequence number 0
     EXPECT_EQ(msg.getChatText(), "");
     EXPECT_EQ(msg.getOrigin(), "");
     EXPECT_EQ(msg.getDestination(), "");
     EXPECT_EQ(msg.getSequenceNumber(), 0);
+}
+
+// Test sequence number starting from 1
+TEST_F(SimpleTest, SequenceNumberStartsFromOne) {
+    Message msg1("Hello", "Node1", "Node2", 1);
+    EXPECT_TRUE(msg1.isValid());
+    
+    Message msg2("World", "Node1", "Node2", 2);
+    EXPECT_TRUE(msg2.isValid());
+    
+    // Sequence numbers must be positive
+    Message invalidMsg("Invalid", "Node1", "Node2", 0);
+    EXPECT_FALSE(invalidMsg.isValid());
 }
 
 // Basic pass test

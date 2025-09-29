@@ -60,4 +60,12 @@ private:
     int nextSequenceNumber;
     QMap<QString, int> lastSequenceNumbers;
     QQueue<Message> messageQueue;
+    
+    // Sequence ordering mechanism
+    QMap<QString, QMap<int, Message>> pendingMessages; // origin -> sequence -> message
+    QMap<QString, int> expectedSequenceNumbers; // origin -> next expected sequence
+    
+    void processOrderedMessage(const Message& message);
+    void deliverPendingMessages(const QString& origin);
+    bool isSequenceExpected(const Message& message) const;
 };

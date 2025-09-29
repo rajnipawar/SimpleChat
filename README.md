@@ -213,9 +213,11 @@ The test suite includes comprehensive unit tests (`tests/test_simple.cpp`) cover
 - Very long messages (1000+ characters)
 
 **Sequence Number Testing:**
-- Zero and positive sequence numbers
-- Negative sequence number validation
+- Sequence numbers starting from 1 (requirement compliance)
+- Zero sequence number validation (must be invalid)
+- Negative sequence number validation (must be invalid) 
 - Large sequence number handling
+- Sequential ordering verification
 
 **Node ID Validation:**
 - Valid origin and destination IDs
@@ -232,7 +234,7 @@ The test suite includes comprehensive unit tests (`tests/test_simple.cpp`) cover
 - Boundary value testing
 - Error condition handling
 
-**Test Results:** 17 comprehensive test cases with 100% pass rate
+**Test Results:** 18 comprehensive test cases with 100% pass rate
 
 ## Project Structure
 
@@ -252,7 +254,7 @@ SimpleChat/
 │   └── message.h/cpp       # Message protocol implementation
 └── tests/
     ├── CMakeLists.txt      # Test build configuration
-    └── test_simple.cpp     # Comprehensive unit tests (17 test cases)
+    └── test_simple.cpp     # Comprehensive unit tests (18 test cases)
 ```
 
 ## Network Protocol
@@ -323,16 +325,26 @@ export QT_LOGGING_RULES="*.debug=true"
 ## Implementation Details
 
 ### Message Routing Algorithm
-1. Receive or create message
-2. Check if destination matches current node ID
-3. If yes: deliver message locally
-4. If no: forward to next node in ring
-5. Use sequence numbers to maintain ordering
+1. **Message Creation**: Create message with Origin, Destination, and auto-assigned sequence number
+2. **Unique Identification**: Messages are uniquely identified by three components:
+   - Origin: Unique identifier for each SimpleChat instance
+   - Destination: Where the message should end up
+   - Sequence number: Starting from 1, incrementing for each message from that origin
+3. **Ring Propagation**: Forward message around static ring of peers until it reaches destination
+4. **Sequence Ordering**: Messages are delivered in sequence number order at destination
 
-### Sequence Number Management
-- Each node maintains its own sequence counter starting at 1
-- Sequence numbers increment for each outgoing message
-- Used for message ordering and duplicate detection
+### Sequence Number Management & Ordering
+- **Starting from 1**: Each node's sequence counter begins at 1 and increments for each outgoing message
+- **Automatic Assignment**: NetworkManager automatically assigns sequence numbers when sending
+- **Order Enforcement**: Messages must be delivered in sequence order (e.g., message 3 before message 4)
+- **Out-of-Order Buffering**: Messages arriving out of sequence are buffered until their turn
+- **Sequence Validation**: Only messages with sequence numbers ≥ 1 are considered valid
+
+### Ring Topology Message Forwarding
+- **Destination Check**: If message destination matches current node → process with sequence ordering
+- **Forward Logic**: If message destination ≠ current node → forward to next hop in ring
+- **Ring Completion**: Messages propagate around the ring until they reach their intended destination
+- **Logging**: Comprehensive debug output tracks message flow through the ring
 
 ### Connection Recovery
 - Automatic reconnection with exponential backoff

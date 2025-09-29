@@ -24,7 +24,7 @@ QVariantMap Message::toVariantMap() const {
 }
 
 bool Message::isValid() const {
-    return !chatText.isEmpty() && !origin.isEmpty() && !destination.isEmpty() && sequenceNumber >= 0;
+    return !chatText.isEmpty() && !origin.isEmpty() && !destination.isEmpty() && sequenceNumber >= 1;
 }
 
 QDataStream& operator<<(QDataStream& stream, const Message& message) {

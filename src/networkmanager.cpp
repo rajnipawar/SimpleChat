@@ -83,8 +83,14 @@ void NetworkManager::sendMessage(const Message& message) {
         return;
     }
     
+    // Create message with proper sequence number
     Message msgToSend = message;
+    msgToSend.setOrigin(nodeId); // Ensure origin is set to current node
     msgToSend.setSequenceNumber(nextSequenceNumber++);
+    
+    qDebug() << "Sending message from" << msgToSend.getOrigin() 
+             << "to" << msgToSend.getDestination() 
+             << "with sequence number" << msgToSend.getSequenceNumber();
     
     if (msgToSend.getDestination() == nodeId) {
         deliverMessage(msgToSend);
@@ -161,11 +167,15 @@ void NetworkManager::processReceivedData(QTcpSocket* socket) {
         messageStream >> message;
         
         if (message.isValid()) {
-            qDebug() << "Received message from" << message.getOrigin() << "to" << message.getDestination();
+            qDebug() << "Received message from" << message.getOrigin() 
+                     << "to" << message.getDestination() 
+                     << "with sequence number" << message.getSequenceNumber();
             
             if (message.getDestination() == nodeId) {
-                deliverMessage(message);
+                // Process message with sequence ordering
+                processOrderedMessage(message);
             } else {
+                // Forward message to next hop in ring
                 forwardMessage(message);
             }
         }
@@ -202,4 +212,69 @@ void NetworkManager::retryConnection() {
 
 void NetworkManager::addPeer(const QString& peerId, int port) {
     peerPorts[peerId] = port;
+}
+
+// Sequence ordering mechanism implementation
+void NetworkManager::processOrderedMessage(const Message& message) {
+    const QString& origin = message.getOrigin();
+    int sequenceNumber = message.getSequenceNumber();
+    
+    // Initialize expected sequence number for new origin
+    if (!expectedSequenceNumbers.contains(origin)) {
+        expectedSequenceNumbers[origin] = 1;
+    }
+    
+    if (isSequenceExpected(message)) {
+        // Deliver message immediately if it's the expected sequence
+        qDebug() << "Delivering message with expected sequence" << sequenceNumber 
+                 << "from" << origin;
+        deliverMessage(message);
+        
+        // Update expected sequence number
+        expectedSequenceNumbers[origin] = sequenceNumber + 1;
+        
+        // Check for any pending messages that can now be delivered
+        deliverPendingMessages(origin);
+    } else {
+        // Store message for later delivery
+        qDebug() << "Storing out-of-order message with sequence" << sequenceNumber 
+                 << "from" << origin << "(expected:" << expectedSequenceNumbers[origin] << ")";
+        pendingMessages[origin][sequenceNumber] = message;
+    }
+}
+
+void NetworkManager::deliverPendingMessages(const QString& origin) {
+    if (!pendingMessages.contains(origin)) {
+        return;
+    }
+    
+    QMap<int, Message>& originMessages = pendingMessages[origin];
+    int expected = expectedSequenceNumbers[origin];
+    
+    // Deliver consecutive messages starting from expected sequence
+    while (originMessages.contains(expected)) {
+        const Message& pendingMsg = originMessages[expected];
+        qDebug() << "Delivering pending message with sequence" << expected << "from" << origin;
+        
+        deliverMessage(pendingMsg);
+        originMessages.remove(expected);
+        expectedSequenceNumbers[origin] = ++expected;
+    }
+    
+    // Clean up empty maps
+    if (originMessages.isEmpty()) {
+        pendingMessages.remove(origin);
+    }
+}
+
+bool NetworkManager::isSequenceExpected(const Message& message) const {
+    const QString& origin = message.getOrigin();
+    int sequenceNumber = message.getSequenceNumber();
+    
+    if (!expectedSequenceNumbers.contains(origin)) {
+        // First message from this origin should have sequence number 1
+        return sequenceNumber == 1;
+    }
+    
+    return sequenceNumber == expectedSequenceNumbers.value(origin);
 }
