@@ -57,7 +57,7 @@ private:
     QList<int> ringPorts;
     int currentPortIndex;
     
-    int nextSequenceNumber;
+    QMap<QString, int> nextSequenceNumbers; // destination -> next sequence number
     QMap<QString, int> lastSequenceNumbers;
     QQueue<Message> messageQueue;
     

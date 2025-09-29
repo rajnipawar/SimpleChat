@@ -5,7 +5,7 @@
 
 NetworkManager::NetworkManager(QObject* parent) 
     : QObject(parent), server(nullptr), neighborSocket(nullptr), 
-      serverPort(0), neighborPort(0), nextSequenceNumber(1), currentPortIndex(-1) {
+      serverPort(0), neighborPort(0), currentPortIndex(-1) {
     
     retryTimer = new QTimer(this);
     retryTimer->setSingleShot(true);
@@ -83,10 +83,16 @@ void NetworkManager::sendMessage(const Message& message) {
         return;
     }
     
-    // Create message with proper sequence number
+    // Create message with proper sequence number (per destination)
     Message msgToSend = message;
     msgToSend.setOrigin(nodeId); // Ensure origin is set to current node
-    msgToSend.setSequenceNumber(nextSequenceNumber++);
+    
+    const QString& destination = msgToSend.getDestination();
+    if (!nextSequenceNumbers.contains(destination)) {
+        nextSequenceNumbers[destination] = 1;
+    }
+    
+    msgToSend.setSequenceNumber(nextSequenceNumbers[destination]++);
     
     qDebug() << "Sending message from" << msgToSend.getOrigin() 
              << "to" << msgToSend.getDestination() 

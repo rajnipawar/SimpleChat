@@ -68,7 +68,8 @@ void SimpleChat::onMessageEntered(const QString& text, const QString& destinatio
         return;
     }
     
-    Message message(trimmedText, nodeId, destination, 0);
+    // Create message with placeholder sequence number (NetworkManager will assign the correct one)
+    Message message(trimmedText, nodeId, destination, 1);
     qDebug() << "Sending message from" << nodeId << "to" << destination << ":" << trimmedText;
     networkManager->sendMessage(message);
     
