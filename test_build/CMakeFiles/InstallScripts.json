@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/rajnipawar19/Desktop/IIT C/CS 550 AOS/SimpleChat/test_build/cmake_install.cmake",
+		"/Users/rajnipawar19/Desktop/IIT C/CS 550 AOS/SimpleChat/test_build/tests/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

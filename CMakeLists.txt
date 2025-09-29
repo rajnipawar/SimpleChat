@@ -49,3 +49,11 @@ else()
     target_link_libraries(SimpleChat Qt5::Core Qt5::Widgets Qt5::Network)
     target_include_directories(SimpleChat PRIVATE src)
 endif()
+
+# Option to build tests
+option(BUILD_TESTS "Build test suite" OFF)
+
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
