@@ -1,3 +1,0 @@
-# Hashes of file build rules.
-6977b2589934cfbb7b2cacbe4e674d27 CMakeFiles/SimpleChat_autogen
-3c3aa84be5f74647714a51d33d96a6b6 SimpleChat_autogen/timestamp

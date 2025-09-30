@@ -7,7 +7,11 @@ set -e
 
 echo "Building SimpleChat..."
 
-# Create build directory if it doesn't exist
+# Create build directory and clean any existing cache
+if [ -d "build" ]; then
+    echo "Cleaning existing build directory..."
+    rm -rf build
+fi
 mkdir -p build
 cd build
 

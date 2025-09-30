@@ -1,5 +1,0 @@
-/Users/rajnipawar19/Desktop/IIT C/CS 550 AOS/SimpleChat/build/CMakeFiles/SimpleChat.dir
-/Users/rajnipawar19/Desktop/IIT C/CS 550 AOS/SimpleChat/build/CMakeFiles/edit_cache.dir
-/Users/rajnipawar19/Desktop/IIT C/CS 550 AOS/SimpleChat/build/CMakeFiles/rebuild_cache.dir
-/Users/rajnipawar19/Desktop/IIT C/CS 550 AOS/SimpleChat/build/CMakeFiles/SimpleChat_autogen_timestamp_deps.dir
-/Users/rajnipawar19/Desktop/IIT C/CS 550 AOS/SimpleChat/build/CMakeFiles/SimpleChat_autogen.dir
