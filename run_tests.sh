@@ -35,7 +35,12 @@ fi
 echo ""
 echo "Running test suite..."
 echo "===================="
-ctest --output-on-failure
+ctest --output-on-failure --verbose
+
+echo ""
+echo "Detailed test execution:"
+echo "========================"
+./tests/SimpleChat_Tests
 
 echo ""
 echo "Test suite completed."

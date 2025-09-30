@@ -178,16 +178,16 @@ If Node1 sends a message to Node3:
 ./run_tests.sh
 
 # Or build and run tests manually
-mkdir test_build && cd test_build
-cmake -DBUILD_TESTS=ON ..
-make -j$(nproc)
+mkdir -p tests/build && cd tests/build
+cmake -DBUILD_TESTS=ON ../..
+make -j$(sysctl -n hw.ncpu)
 ctest --output-on-failure
 ```
 
 ### Integration Testing
 ```bash
-# Run integration test script
-./test_messaging.sh
+# Launch all 4 nodes for manual integration testing
+./launch_ring.sh
 ```
 
 ### Manual Testing Steps
@@ -243,7 +243,6 @@ SimpleChat/
 ├── CMakeLists.txt          # Build configuration
 ├── README.md               # This documentation
 ├── launch_ring.sh          # Automated launcher script
-├── test_messaging.sh       # Integration testing script
 ├── run_tests.sh            # Automated test suite runner
 ├── install_dependencies.sh # Dependency installation
 ├── src/
@@ -254,7 +253,8 @@ SimpleChat/
 │   └── message.h/cpp       # Message protocol implementation
 └── tests/
     ├── CMakeLists.txt      # Test build configuration
-    └── test_simple.cpp     # Comprehensive unit tests (18 test cases)
+    ├── test_simple.cpp     # Comprehensive unit tests (18 test cases)  
+    └── build/              # Test build directory (auto-generated)
 ```
 
 ## Network Protocol
