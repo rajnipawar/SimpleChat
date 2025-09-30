@@ -14,14 +14,14 @@ if ! command -v cmake &> /dev/null; then
     exit 1
 fi
 
-# Create test build directory
+# Create test build directory inside tests folder
 echo "Setting up test build..."
-mkdir -p test_build
-cd test_build
+mkdir -p tests/build
+cd tests/build
 
 # Configure with tests enabled
 echo "Configuring with tests enabled..."
-cmake -DBUILD_TESTS=ON ..
+cmake -DBUILD_TESTS=ON ../..
 
 # Build tests
 echo "Building test suite..."

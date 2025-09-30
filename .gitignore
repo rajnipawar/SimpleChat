@@ -1,6 +1,6 @@
 # Build directories
 build/
-test_build/
+tests/build/
 
 # macOS
 .DS_Store
